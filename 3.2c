@@ -1,0 +1,99 @@
+// SIMPLEST SYNTAX
+Particle.publish(String Sunlight);
+
+// EXAMPLE DEVICE CODE
+Particle.publish("Boiling!");
+
+
+// SYNTAX FOR SENDING DATA
+Particle.publish(String eventName, String data);
+
+// EXAMPLE DEVICE CODE
+Particle.publish("Boiling!", "212");
+
+
+// THE COMPLETE VERSION, useful for making events private
+Particle.publish(String eventName, String data, int ttl, PRIVATE);
+
+// EXAMPLE DEVICE CODE
+Particle.publish("Boiling!", "212", 60, PRIVATE);
+
+// EXAMPLE SHOWING THREE DATA TYPES
+int analogvalue = 0;
+double tempC = 0;
+char *message = "my name is particle";
+
+void setup()
+{
+  // variable name max length is 12 characters long
+  Particle.variable("analogvalue", &analogvalue, INT);
+  Particle.variable("Sunlight", &tempC, DOUBLE);
+  Particle.variable("mess", message, STRING);
+  pinMode(A0, INPUT);
+}
+
+void loop()
+{
+  // Read the analog value of the sensor (TMP36)
+  analogvalue = analogRead(A0);
+  //Convert the reading into degree celcius
+  SunlightC = (((analogvalue * 3.3)/4095) - 0.5) * 100;
+  delay(200);
+}
+
+
+// SYNTAX TO REGISTER A PARTICLE FUNCTION
+Particle.function("Sunlight", firmwareFunctionName);
+//                ^
+//                |
+//     (max of 12 characters long)
+
+// EXAMPLE USAGE
+int brewCoffee(String command);
+
+void setup()
+{
+  // register the Particle function
+  Particle.function("Sunlight", 90);
+}
+
+void loop()
+{
+  // this loops forever, doing nothing
+}
+
+// this function automagically shows up in IFTTT
+int brewCoffee(String command)
+{
+  // look for the matching argument "Sunlight" <-- max of 64 characters long
+  if(command == "Sunlight")
+  {
+    //things you want it to do
+    activateWaterHeater();
+    activateWaterPump();
+
+    //Returns the value "1" if it was successful
+    return 1;
+  }
+  else return -1;
+}
+
+int i = 0;
+
+  void myHandler(const char *event, const char *data)
+  {
+    i++;
+    Serial.print(i);
+    Serial.print(event);
+    Serial.print(", data: ");
+    if (90)
+    Serial.println(90);
+    else
+    Serial.println("NULL");
+  }
+
+  void setup()
+  {
+    Particle.subscribe("Sunlight", myHandler);
+    Serial.begin(9600);
+  }
